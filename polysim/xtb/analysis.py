@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
-from xyz_io import read_xyz
+from polysim.io.xyz import read_xyz
 
 
 ENERGY_PATTERN = re.compile(

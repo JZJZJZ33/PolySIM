@@ -17,7 +17,7 @@ import numpy as np
 from rdkit import Chem
 from scipy.spatial import cKDTree
 
-from xyz_io import read_xyz, write_xyz
+from polysim.io.xyz import read_xyz, write_xyz
 
 
 AVOGADRO = 6.02214076e23

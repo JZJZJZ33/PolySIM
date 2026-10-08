@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "polysim"
+version = "0.1.0"
+description = "Build polymer chains from pSMILES and prepare packed simulation boxes"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.14.1",
+  "rdkit>=2023.9.5,!=2024.3.5",
+  "stk>=2026.1.4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+polysim = "polysim.workflow:main"
+
+[tool.setuptools.packages.find]
+include = ["polysim*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+

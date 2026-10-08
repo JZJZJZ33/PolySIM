@@ -10,7 +10,7 @@ from pathlib import Path
 from rdkit import Chem
 from rdkit.Chem import AllChem, rdMolDescriptors
 
-from xyz_io import write_xyz
+from polysim.io.xyz import write_xyz
 
 
 @dataclass(frozen=True)
@@ -128,7 +128,7 @@ def save_conformer_sdf(result: ConformerResult, output: str | Path) -> Path:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("input", type=Path, help="chain SDF/MOL from chain_builder.py")
+    parser.add_argument("input", type=Path, help="chain SDF/MOL from the chain builder")
     parser.add_argument("-o", "--output", type=Path, required=True)
     parser.add_argument(
         "--sdf-output",

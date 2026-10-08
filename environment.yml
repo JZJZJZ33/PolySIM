@@ -6,4 +6,4 @@ dependencies:
   - xtb>=6.5.1
   - pip
   - pip:
-      - -r requirements-dev.txt
+      - -e .[dev]

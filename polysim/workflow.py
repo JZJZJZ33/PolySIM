@@ -17,17 +17,21 @@ from pathlib import Path
 
 from rdkit.Chem import rdMolDescriptors
 
-from chain_builder import (
+from polysim.chemistry.chains import (
     build_chain,
     build_random_copolymer,
     read_psmiles_file,
     save_chain,
 )
-from conf_builder import build_mmff_conformer, save_conformer, save_conformer_sdf
-from system_builder import pack_chains, save_system
-from xtb_analysis import analyze_results
-from xtb_calc import run_xtb
-from xyz_io import read_xyz
+from polysim.chemistry.conformers import (
+    build_mmff_conformer,
+    save_conformer,
+    save_conformer_sdf,
+)
+from polysim.io.xyz import read_xyz
+from polysim.md.system import pack_chains, save_system
+from polysim.xtb.analysis import analyze_results
+from polysim.xtb.calculator import run_xtb
 
 
 XTB_METHODS = ("none", "gfn0", "gfn1", "gfn2", "gfnff")

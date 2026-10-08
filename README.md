@@ -26,9 +26,9 @@ both wildcard sites are replaced by hydrogen directly.
 
 ## Requirements
 
-PolySIM is currently a standalone script folder, not an installed Python
-package. It requires Python 3.11 or newer. Python 3.11 and 3.12 are the intended
-runtime versions; the tested STK release requires Python 3.11+.
+PolySIM is an installable Python package. It requires Python 3.11 or newer.
+Python 3.11 and 3.12 are the intended runtime versions; the tested STK release
+requires Python 3.11+.
 
 The simplest complete setup uses Conda and includes the external xTB program:
 
@@ -44,11 +44,12 @@ Alternatively, create a virtual environment and install the Python dependencies:
 python3 -m venv .venv
 source .venv/bin/activate             # Windows: .venv\Scripts\activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
 
-Geometry optimization also requires the external `xtb` executable. It cannot
-be installed by `requirements.txt`; one supported installation route is:
+Geometry optimization also requires the external `xtb` executable. It is not a
+Python dependency and is therefore not installed by `pip`; one supported route
+is:
 
 ```bash
 conda install -c conda-forge xtb
@@ -58,10 +59,10 @@ xtb --version
 The full workflow is tested with STK 2026.1.4.0 and xTB 6.5.1. The chain and
 MMFF stages can run without xTB by passing `--xtb-method none`.
 
-For development and testing, install `requirements-dev.txt` instead:
+For development and testing, install the `dev` dependency group:
 
 ```bash
-python -m pip install -r requirements-dev.txt
+python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
@@ -70,7 +71,7 @@ python -m pytest
 Run a small workflow that does not require xTB:
 
 ```bash
-python build_system.py \
+python -m polysim \
   --psmiles-file examples/pvdf.psmiles.txt \
   --repeat-units 5 \
   --chains 3 \
@@ -78,7 +79,8 @@ python build_system.py \
   --output-directory output/quickstart
 ```
 
-Inspect every available option with `python build_system.py --help`.
+Inspect every available option with `python -m polysim --help`. After
+installation, the equivalent shorter command is `polysim --help`.
 
 ## pSMILES input
 
@@ -111,7 +113,7 @@ may differ between runs. For example, this creates a 17-unit chain containing
 approximately 30% monomer 2:
 
 ```bash
-python build_system.py \
+python -m polysim \
   --monomer-1-file examples/monomer_1.psmiles.txt \
   --monomer-2-file examples/monomer_2.psmiles.txt \
   --monomer-2-percentage 30 \
@@ -141,7 +143,7 @@ Run the workflow from inside the `polySIM` folder:
 
 ```bash
 cd polySIM
-python build_system.py \
+python -m polysim \
   --psmiles-file examples/pvdf.psmiles.txt \
   --repeat-units 50 \
   --chains 30 \
@@ -179,14 +181,14 @@ only for one isolated chain. A failure stops the workflow and retains the
 
 After xTB, the workflow writes `xtb_analysis/xtb_analysis.json` and `.csv`.
 The analysis extracts the final total energy, reports relative energies, ranks
-results, and stages selected geometries. `xtb_analysis.py` can also analyze a
-directory containing several same-atom-order xTB conformers. It uses ordered
+results, and stages selected geometries. The xTB analysis module can also
+analyze a directory containing several same-atom-order xTB conformers. It uses ordered
 Kabsch RMSD filtering, avoiding unreliable bond inference from XYZ files.
 
 Standalone usage:
 
 ```bash
-python xtb_analysis.py \
+python -m polysim.xtb.analysis \
   --input-directory path/to/xtb/results \
   --output-directory path/to/analysis \
   --rmsd-threshold 2.0 \
@@ -212,35 +214,41 @@ XYZ does not contain bonds or periodic box vectors. For handover, keep
 `system.xyz`, `system.box.json`, `chain_mmff_explicit_h.sdf`, and
 `manifest.json` together.
 
-## Independent modules
+## Code organization
 
 ```text
-chain_builder.py  -> finite-chain topology
-conf_builder.py   -> MMFF conformer
-xtb_calc.py       -> isolated-chain xTB optimization/single point/Hessian
-xtb_analysis.py   -> energy ranking and RMSD diversity analysis
-system_builder.py -> unoptimized approximate multi-chain box
-build_system.py   -> complete orchestration
+polysim/chemistry/  -> RDKit/STK chain construction and MMFF conformers
+polysim/xtb/        -> isolated-chain xTB execution and result analysis
+polysim/md/         -> approximate box construction for downstream MD
+polysim/io/         -> shared molecular file readers and writers
+polysim/workflow.py -> complete orchestration and command-line interface
 ```
 
-Run these scripts from inside `polySIM`. Use `python <script>.py --help` for all
-options, for example `python build_system.py --help`.
+Each section can be inspected and tested independently. The primary supported
+interface is `python -m polysim`; specialist module commands include
+`python -m polysim.xtb.analysis --help` and
+`python -m polysim.xtb.calculator --help`.
 
 ## Repository layout
 
 ```text
 polySIM/
-├── build_system.py          # end-to-end command-line workflow
-├── chain_builder.py         # pSMILES parsing and chain construction
-├── conf_builder.py          # RDKit MMFF conformer generation
-├── system_builder.py        # rigid-chain box packing
-├── xtb_calc.py              # xTB execution wrapper
-├── xtb_analysis.py          # energy/RMSD analysis
-├── xyz_io.py                # shared XYZ reader and writer
+├── polysim/
+│   ├── chemistry/
+│   │   ├── chains.py        # pSMILES and STK chain construction
+│   │   └── conformers.py    # RDKit MMFF conformer generation
+│   ├── xtb/
+│   │   ├── calculator.py    # xTB execution wrapper
+│   │   └── analysis.py      # energy and RMSD analysis
+│   ├── md/
+│   │   └── system.py        # rigid-chain packing / MD preparation
+│   ├── io/
+│   │   └── xyz.py           # shared XYZ reader and writer
+│   ├── workflow.py          # end-to-end workflow
+│   └── __main__.py          # python -m polysim entry point
 ├── examples/                # example pSMILES inputs
 ├── tests/                   # fast workflow tests
-├── requirements.txt         # runtime Python dependencies
-├── requirements-dev.txt     # runtime plus test dependencies
+├── pyproject.toml           # package metadata and all Python dependencies
 └── environment.yml          # complete Conda environment, including xTB
 ```
 
