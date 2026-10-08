@@ -1,0 +1,52 @@
+# macOS and editor metadata
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Local Python environments
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# PolySIM calculation outputs
+output/
+outputs/
+results/
+scratch/
+*.xtb.log
+*.thermo.log
+xtbopt.xyz
+xtbout.json
+charges
+wbo
+gfnff_charges
+gfnff_topo
+.xtboptok
+xtbrestart
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+

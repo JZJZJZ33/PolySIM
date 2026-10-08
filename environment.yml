@@ -1,0 +1,9 @@
+name: polisim
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.11,<3.13
+  - xtb>=6.5.1
+  - pip
+  - pip:
+      - -r requirements-dev.txt

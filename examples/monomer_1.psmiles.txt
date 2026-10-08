@@ -1,0 +1,2 @@
+# Polyethylene repeat unit.
+[*]CC[*]

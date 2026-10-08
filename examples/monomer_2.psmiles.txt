@@ -1,0 +1,2 @@
+# Poly(vinylidene fluoride) repeat unit.
+[*]CC(F)(F)[*]
